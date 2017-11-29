@@ -100,3 +100,8 @@ ENV/
 
 # specific files
 *.html
+.idea/inspectionProfiles/profiles_settings.xml
+*.xml
+*.iml
+*.sublime-project
+*.sublime-workspace
