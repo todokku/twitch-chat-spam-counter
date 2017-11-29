@@ -30,4 +30,11 @@ Parse Chatty twitch chat logs into a Pandas dataframe. Example usage below:
  ('PepePls', 2853)]
 ```
 
-The functionality is pretty basic, but the entire chat log is parsed into the dataframe from which more sophisticated massaging can be achieved.
+The functionality is pretty basic, but the entire chat log is parsed into the
+dataframe from which more sophisticated massaging can be achieved.
+
+By default Chatty logs timestamps with no date. When the parser reads this
+into a python datetime format it will prepend your systems current date into
+the timestamp. If you want to select time periods to count it is easiest if
+you go into Chatty settings and change date format to include full YYYY-MM-DD
+date as well as time.
