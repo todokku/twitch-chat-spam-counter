@@ -4,6 +4,21 @@ from collections import Counter
 
 
 class ChattyLog:
+
+    """
+    Parser and basic manipulator class for reading plaintext Chatty log files.
+
+    Attributes
+    ----------
+    df : pandas.DataFrame
+        pandas.DataFrame Parsed logfile with 3 column names: timestamp,
+        username, and content. NaN values are replaced with empty strings,
+        extraneous chat info is stripped as well (log open and close lines,
+        mod announcements and bans.)
+    twitch_channel : str
+        Username of twitch channel, derived from Chatty logfile name.
+    """
+
     def __init__(self, logfile):
         self.twitch_channel = os.path.basename(logfile)[:-4].strip('#')
         with open(logfile, 'r', encoding='utf-8') as f:
@@ -12,7 +27,7 @@ class ChattyLog:
 
     def to_dataframe(self, raw_contents):
         """
-        Read file buffer into pandas DataFrame
+        Parse file buffer into pandas DataFrame
 
         Parameters
         ----------
