@@ -37,4 +37,6 @@ By default Chatty logs timestamps with no date. When the parser reads this
 into a python datetime format it will prepend your systems current date into
 the timestamp. If you want to select time periods to count it is easiest if
 you go into Chatty settings and change date format to include full YYYY-MM-DD
-date as well as time.
+date as well as time. 
+
+
