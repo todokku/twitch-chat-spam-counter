@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from collections import Counter
+import warnings
 
 
 class ChattyLog:
@@ -44,6 +45,8 @@ class ChattyLog:
             extraneous chat info is stripped as well (log open and close
             lines, mod announcements and bans.)
         """
+        warnings.filterwarnings("ignore", 'This pattern has match groups')
+
         s = pd.Series(raw_contents)
         s2 = s[s.str.contains('<(.*?)>')]
         df = s2.str.split('\s<(.*?)>.?\s', n=1, expand=True)
