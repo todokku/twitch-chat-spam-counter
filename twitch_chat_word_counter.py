@@ -20,10 +20,11 @@ class ChattyLog:
     """
 
     def __init__(self, logfile):
-        self.twitch_channel = os.path.basename(logfile)[:-4].strip('#')
+        self.fname = os.path.basename(logfile)
         with open(logfile, 'r', encoding='utf-8') as f:
             raw_contents = f.readlines()
-        self.df = self.to_dataframe(raw_contents)
+        self.raw = raw_contents
+        self.chat = self.to_dataframe(self.raw)
 
     def to_dataframe(self, raw_contents):
         """
@@ -44,13 +45,13 @@ class ChattyLog:
             lines, mod announcements and bans.)
         """
         s = pd.Series(raw_contents)
-        s = s[s.str.contains('<')]
-        df = s.str.extract('\[(.*?)\]', expand=True)
-        df.columns = ['timestamp']
+        s2 = s[s.str.contains('<(.*?)>')]
+        df = s2.str.split('\s<(.*?)>.?\s', n=1, expand=True)
+        df.columns = ['timestamp', 'username', 'message']
+        df['timestamp'] = df['timestamp'].str.strip('[]')
         df['timestamp'] = pd.to_datetime(df['timestamp'])
-        df['username'] = s.str.extract('<(.*?)>', expand=True)
-        df['content'] = s.str.extract('> (.*?)$', expand=True)
-        df['content'] = df['content'].fillna('')  # strip NaN values if exist
+        df['message'] = df['message'].str.strip('\n')
+        df['message'] = df['message'].fillna('')  # strip NaN values if exist
 
         return df
 
@@ -77,7 +78,7 @@ class ChattyLog:
             dataframe input.
         """
         if df is None:
-            words = self.df['content']
+            words = self.chat['message']
         else:
             words = df
 
