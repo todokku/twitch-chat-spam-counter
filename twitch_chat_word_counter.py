@@ -4,20 +4,33 @@ from collections import Counter
 import warnings
 
 
-class ChattyLog:
+class ChatLog:
 
     """
-    Parser and basic manipulator class for reading plaintext Chatty log files.
+    Parser and basic manipulator class for reading plaintext twitch chat log
+    files.
+
+    Supported file formats: utf-8 encoded, space-delimited csv files. Files
+    must have a timestamp, username, and message field in that order.
+        - timestamp: Doesn't have to include an absolute date, whatever the
+          current date is will be pre-pended to the time. Optional to be
+          enclosed by  [ ] characters.
+        - username: The username must be enclosed by < > characters.
+        - message: No special formatting required for message content, as long
+          as it is utf-8 encoded or can be easily converted.
 
     Attributes
     ----------
-    df : pandas.DataFrame
-        pandas.DataFrame Parsed logfile with 3 column names: timestamp,
-        username, and content. NaN values are replaced with empty strings,
+    chat : pandas.DataFrame
+        Pandas.DataFrame Parsed logfile with 3 column names: timestamp,
+        username, and message. NaN values are replaced with empty strings,
         extraneous chat info is stripped as well (log open and close lines,
-        mod announcements and bans.)
-    twitch_channel : str
-        Username of twitch channel, derived from Chatty logfile name.
+        mod announcements and bans).
+    fname : str
+        Filename of chat log.
+    raw : list
+        Unprocessed log file, read into a list of str.
+
     """
 
     def __init__(self, logfile):
@@ -25,7 +38,10 @@ class ChattyLog:
         with open(logfile, 'r', encoding='utf-8') as f:
             raw_contents = f.readlines()
         self.raw = raw_contents
-        self.chat = self.to_dataframe(self.raw)
+        try:
+            self.chat = self.to_dataframe(self.raw)
+        except:
+            raise InvalidFileFormat(f'{self.fname} is not a valid chat log format. See ChatLog docstring for supported file formats')
 
     def to_dataframe(self, raw_contents):
         """
@@ -90,3 +106,7 @@ class ChattyLog:
             words = [w for sublist in words for w in sublist]
 
         return Counter(words)
+
+
+class InvalidFileFormat(exception):
+    pass
