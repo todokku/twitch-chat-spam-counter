@@ -107,6 +107,16 @@ class ChatLog:
 
         return Counter(words)
 
+    def poglul_ratio(self):
+        C = self.gen_counter(split_words=True)
+        pog = C.get('PogChamp')
+        lul = C.get('LUL')
+        return (pog, lul, pog / lul)
 
-class InvalidFileFormat(exception):
+    def top_spam(self, n=10):
+        C = self.gen_counter()
+        return C.most_common(n)
+
+
+class InvalidFileFormat(Exception):
     pass
