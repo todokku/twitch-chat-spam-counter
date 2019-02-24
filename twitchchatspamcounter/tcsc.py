@@ -33,15 +33,28 @@ class ChatLog:
 
     """
 
-    def __init__(self, logfile):
+    def __init__(self, logfile, rechat_flag=False):
         self.fname = os.path.basename(logfile)
-        with open(logfile, 'r', encoding='utf-8') as f:
+        with open(logfile, 'r', encoding='utf-8-sig') as f:
             raw_contents = f.readlines()
         self.raw = raw_contents
         try:
-            self.chat = self.to_dataframe(self.raw)
+            if rechat_flag:
+                self.chat = self._rechattool_output_to_dataframe(raw_contents)
+            else:
+                self.chat = self.to_dataframe(self.raw)
         except:
             raise InvalidFileFormat(f'{self.fname} is not a valid chat log format. See ChatLog docstring for supported file formats')
+
+    def _rechattool_output_to_dataframe(self, raw_contents):
+        s = pd.Series(raw_contents)
+        df = s.str.split(' ', n=2, expand=True)
+        df.columns = ['timestamp', 'username', 'message']
+        df['timestamp'] = pd.to_datetime(df['timestamp'].str.strip('[]'))
+        df['username'] = df['username'].str.strip(':')
+        df['message'] = df['message'].str.strip('\n').fillna('')
+
+        return df
 
     def to_dataframe(self, raw_contents):
         """
